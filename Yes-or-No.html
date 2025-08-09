@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Will You Say Yes?</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  body {
+    font-family: "Comic Neue", cursive;
+    text-align: center;
+    background: linear-gradient(to bottom right, #ffe6f0, #e6f7ff);
+    margin-top: 10vh;
+    overflow: hidden;
+    padding: 0 10px;
+  }
+  #character {
+    width: 180px;
+    height: auto;
+    margin: 0 auto 30px;
+    transition: transform 0.4s ease;
+  }
+  h1 {
+    color: #ff4d94;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: 30px;
+  }
+  button {
+    background-color: #ff80b3;
+    color: white;
+    border: none;
+    padding: clamp(8px, 2vw, 12px) clamp(15px, 4vw, 25px);
+    margin: 10px;
+    border-radius: 50px;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    animation: pop 0.3s ease;
+  }
+  button:hover {
+    background-color: #ff4d94;
+    transform: scale(1.1);
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .heart {
+    position: fixed;
+    color: #ff4d94;
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+    animation: floatUp 2s linear forwards;
+  }
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-200px);
+      opacity: 0;
+    }
+  }
+  #buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    #buttons {
+      flex-direction: column;
+    }
+  }
+  #message {
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    color: #ff4d94;
+    margin-top: 20px;
+  }
+</style>
+</head>
+
+<body>
+  <img src="images/rreally.png" alt="Neutral Expression" id="character" />
+
+  <h1 id="question">Will you say Yes? 💌</h1>
+  <div id="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😏</button>
+  </div>
+  <p id="message"></p>
+
+  <script>
+    let noClickCount = 0;
+    const funnyTexts = [
+      "Really? 😳",
+      "Are you sure? 🤨",
+      "Please? 🥺",
+      "Don’t break my heart 💔",
+      "Last chance! 😭",
+      "Are you sure it's no? 😏",
+    ];
+  
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const message = document.getElementById("message");
+    const question = document.getElementById("question");
+    const character = document.getElementById("character");
+  
+    const images = {
+      neutral: "images/rreally.png",
+      happy: "images/happy.dog.gif",
+      sad: "images/saddd.png",
+    };
+  
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.textContent = "💖";
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.top = window.innerHeight - 50 + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+  
+    yesBtn.addEventListener("click", () => {
+      console.log("Yes clicked");
+      document.getElementById("buttons").style.display = "none";
+      question.textContent = "";
+      message.textContent = "Me too 💕 I am so happy!";
+      character.src = images.happy;
+      message.style.fontSize = "clamp(1.2rem, 4vw, 1.5rem)";
+      let heartInterval = setInterval(createHeart, 200);
+      setTimeout(() => clearInterval(heartInterval), 2000);
+    });
+  
+    noBtn.addEventListener("click", () => {
+      console.log("No clicked", noClickCount);
+      if (noClickCount < funnyTexts.length) {
+        question.textContent = funnyTexts[noClickCount];
+        character.src = images.sad;
+        character.style.transform = "scale(1.1) rotate(-10deg)";
+        setTimeout(() => {
+          character.style.transform = "scale(1) rotate(0deg)";
+        }, 400);
+  
+        // Shrink No button but keep tappable
+        let shrinkSize = Math.max(0.8, 1 - noClickCount * 0.1);
+        noBtn.style.transform = `scale(${shrinkSize})`;
+  
+        // Grow Yes button
+        let growSize = 1 + noClickCount * 0.1;
+        yesBtn.style.transform = `scale(${growSize})`;
+  
+        noClickCount++;
+      } else {
+        // Reset after last no message
+        console.log("Resetting...");
+        noClickCount = 0;
+        question.textContent = "Will you say Yes? 💌";
+        yesBtn.style.transform = "scale(1)";
+        noBtn.style.transform = "scale(1)";
+        character.src = images.neutral;
+      }
+    });
+  </script>
+  
+</body>
+</html>
